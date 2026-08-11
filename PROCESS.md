@@ -2,20 +2,21 @@
 
 DESIGN.md §25の3フェーズ構想を、着手可能な粒度のタスクに分解した実装工程表。上から順に進める。各Phaseは前Phaseの成果物の上に構築される。
 
-## Phase 0: プロジェクトセットアップ
+## Phase 0: プロジェクトセットアップ（完了）
 
-- [ ] `npm create svelte@latest` でSvelteKitプロジェクト初期化（TypeScript, ESLint, Prettier有効化）
-- [ ] `@sveltejs/adapter-static` を導入し `svelte.config.js` に設定
-- [ ] `svelte.config.js` に `paths.base` を設定（GitHub Pagesのリポジトリ名 `/iiif-map-viewer/` に合わせる。開発時は環境変数で切り替え）
-- [ ] `src/lib/{allmaps,iiif,annotations,components}/` ディレクトリを作成
-- [ ] `static/data/` ディレクトリを作成
-- [ ] `zod` を依存に追加
-- [ ] `mapbox-gl` ではなく `maplibre-gl`、`@allmaps/maplibre`、`@allmaps/transform` を依存に追加
-- [ ] `.github/workflows/deploy.yml` を作成（`main` push時に `npm ci && npm run build` → `actions/deploy-pages` でデプロイ）
-- [ ] GitHub リポジトリ設定でPages "Source: GitHub Actions" を有効化
-- [ ] READMEに開発コマンド（`npm run dev` 等）を記載
+- [x] `npx sv create` でSvelteKitプロジェクト初期化（TypeScript, ESLint, Prettier有効化）
+- [x] `@sveltejs/adapter-static` を導入（`vite.config.ts` の `sveltekit()` プラグインに設定。SvelteKit最新版では `svelte.config.js` ではなく `vite.config.ts` に統合されている）
+- [x] `vite.config.ts` に `paths.base` を設定（環境変数 `BASE_PATH` で切り替え。devサーバーでは常に空、ビルド時のみ適用）
+- [x] 全ページprerender有効化（`src/routes/+layout.ts` に `export const prerender = true`。adapter-staticで完全静的出力するために必須）
+- [x] `src/lib/{allmaps,iiif,annotations,components}/` ディレクトリを作成
+- [x] `static/data/` ディレクトリを作成
+- [x] `zod` を依存に追加
+- [x] `maplibre-gl`、`@allmaps/maplibre`、`@allmaps/transform` を依存に追加（Allmaps系はDESIGN.md §22に従いバージョン厳密固定）
+- [x] `.github/workflows/deploy.yml` を作成（`main` push時に `npm ci && npm run build` → `actions/deploy-pages` でデプロイ）
+- [x] GitHub リポジトリ作成（public）・push、Pages "Source: GitHub Actions" を有効化
+- [x] READMEに開発コマンド（`npm run dev` 等）を記載
 
-**完了条件**: `npm run dev` でSvelteKitのデフォルトページが起動し、`npm run build` が成功する。GitHub Actionsのデプロイが空ページでも一度通ること。
+**完了条件**: 満たした。`npm run dev` でデフォルトページが起動（HTTP 200）、`npm run build` が完全静的サイト（`index.html` 含む）を出力、GitHub Actionsのデプロイが成功し https://nbtkmy.github.io/iiif-map-viewer/ で公開確認済み。
 
 ## Phase 1: Viewer最小プロトタイプ
 
