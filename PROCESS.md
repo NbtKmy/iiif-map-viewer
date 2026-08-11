@@ -18,15 +18,18 @@ DESIGN.md §25の3フェーズ構想を、着手可能な粒度のタスクに�
 
 **完了条件**: 満たした。`npm run dev` でデフォルトページが起動（HTTP 200）、`npm run build` が完全静的サイト（`index.html` 含む）を出力、GitHub Actionsのデプロイが成功し https://nbtkmy.github.io/iiif-map-viewer/ で公開確認済み。
 
-## Phase 1: Viewer最小プロトタイプ
+## Phase 1: Viewer最小プロトタイプ（完了）
 
 DESIGN.md §25 Phase1に対応。目的: Allmapsの表示・座標変換だけを検証する。
 
-- [ ] 出島Georeference Annotation（Gist）を `static/data/map-georeference.json` として固定コピー
-- [ ] `src/routes/+page.svelte` にMapLibreの地図を表示
-- [ ] `@allmaps/maplibre` の `WarpedMapLayer` で `map-georeference.json` を読み込み、古地図をベースマップ上に重畳
-- [ ] `maxPitch: 0` を設定（`@allmaps/maplibre` はpitch未対応のため）
-- [ ] 古地図の透明度調整スライダーを実装（DESIGN.md §7.2）
+- [x] 出島Georeference Annotation（Gist）を `static/data/map-georeference.json` として固定コピー
+- [x] `src/routes/+page.svelte` にMapLibreの地図を表示
+- [x] `@allmaps/maplibre` の `WarpedMapLayer` で `map-georeference.json` を読み込み、古地図をベースマップ上に重畳
+- [x] `maxPitch: 0` を設定（`@allmaps/maplibre` はpitch未対応のため）
+- [x] 古地図の透明度調整スライダーを実装（DESIGN.md §7.2）
+- [x] MapLibre GL JS v6をViteで使う際に必要な `setWorkerUrl()` 明示呼び出しと `ssr.noExternal` 設定（ハマりどころ。未設定だとワーカーファイルが404になり地図が全く描画されない）
+
+**完了条件**: 満たした。Playwrightでdevサーバーを起動し実際にブラウザで確認 — 出島のIIIF画像が現代地図（CARTO Voyagerスタイル）上の正しい位置に重なって表示され、透明度スライダーで古地図の見え方を調整できることを確認済み。
 
 **完了条件**: 出島のIIIF画像が現代地図上の正しい位置に重なって表示される。
 

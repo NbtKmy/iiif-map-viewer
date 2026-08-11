@@ -6,6 +6,9 @@ import { defineConfig } from 'vite';
 const basePath = process.env.BASE_PATH;
 
 export default defineConfig({
+	ssr: {
+		noExternal: ['maplibre-gl']
+	},
 	plugins: [
 		sveltekit({
 			compilerOptions: {
