@@ -18,6 +18,35 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null;
 }
 
+function extractLabel(value: unknown): string | undefined {
+	if (typeof value === 'string') return value;
+	if (Array.isArray(value)) {
+		for (const entry of value) {
+			const extracted = extractLabel(entry);
+			if (extracted !== undefined) return extracted;
+		}
+		return undefined;
+	}
+	if (isRecord(value) && typeof value['@value'] === 'string') {
+		return value['@value'];
+	}
+	return undefined;
+}
+
+function extractImageServiceId(service: unknown): string | undefined {
+	if (Array.isArray(service)) {
+		for (const entry of service) {
+			const id = extractImageServiceId(entry);
+			if (id !== undefined) return id;
+		}
+		return undefined;
+	}
+	if (isRecord(service) && typeof service['@id'] === 'string') {
+		return service['@id'];
+	}
+	return undefined;
+}
+
 function hasPresentation2Context(context: unknown): boolean {
 	if (typeof context === 'string') {
 		return context.includes('presentation/2/context.json');
@@ -49,11 +78,11 @@ function parseCanvas(canvas: unknown): ParsedCanvas | null {
 	const resource = firstImage['resource'];
 	if (!isRecord(resource)) return null;
 
-	const service = resource['service'];
-	const imageServiceId = isRecord(service) ? service['@id'] : undefined;
-	if (typeof imageServiceId !== 'string') return null;
+	const rawImageServiceId = extractImageServiceId(resource['service']);
+	if (rawImageServiceId === undefined) return null;
+	const imageServiceId = rawImageServiceId.replace(/\/$/, '');
 
-	const label = typeof canvas['label'] === 'string' ? canvas['label'] : id;
+	const label = extractLabel(canvas['label']) ?? id;
 
 	return { id, label, width, height, imageServiceId };
 }
@@ -95,7 +124,7 @@ export function parseManifest(json: unknown): ParsedManifest {
 
 	return {
 		id: typeof json['@id'] === 'string' ? json['@id'] : '',
-		label: typeof json['label'] === 'string' ? json['label'] : '',
+		label: extractLabel(json['label']) ?? '',
 		canvases: dedupedCanvases
 	};
 }
