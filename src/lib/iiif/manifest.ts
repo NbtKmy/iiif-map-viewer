@@ -64,9 +64,7 @@ export function parseManifest(json: unknown): ParsedManifest {
 	}
 
 	if (!hasPresentation2Context(json['@context'])) {
-		throw new ManifestParseError(
-			'このManifestはIIIF Presentation API 2.0形式ではありません。'
-		);
+		throw new ManifestParseError('このManifestはIIIF Presentation API 2.0形式ではありません。');
 	}
 
 	const sequences = json['sequences'];

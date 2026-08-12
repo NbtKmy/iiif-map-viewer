@@ -22,7 +22,11 @@
 			class:selected={canvas.id === selectedCanvasId}
 			onclick={() => onselect(canvas)}
 		>
-			<img src={buildThumbnailUrl(canvas.imageServiceId)} alt={`ページ ${canvas.label}`} loading="lazy" />
+			<img
+				src={buildThumbnailUrl(canvas.imageServiceId)}
+				alt={`ページ ${canvas.label}`}
+				loading="lazy"
+			/>
 			<span class="label">{canvas.label}</span>
 		</button>
 	{/each}
