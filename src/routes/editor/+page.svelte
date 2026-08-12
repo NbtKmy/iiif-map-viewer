@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fetchManifest, ManifestParseError, type ParsedCanvas } from '$lib/iiif/manifest';
-	import { buildFullImageUrl } from '$lib/iiif/imageApi';
+	import { buildDisplayImageUrl } from '$lib/iiif/imageApi';
 	import ManifestThumbnailStrip from '$lib/components/ManifestThumbnailStrip.svelte';
 
 	let manifestUrl = $state('');
@@ -44,6 +44,10 @@
 			<button type="submit" disabled={isLoading}>読み込み</button>
 		</form>
 
+		{#if isLoading}
+			<p role="status">読み込み中…</p>
+		{/if}
+
 		{#if loadError}
 			<p class="error" role="alert">{loadError}</p>
 		{/if}
@@ -59,7 +63,11 @@
 		{#if selectedCanvas}
 			<div class="image-area">
 				<img
-					src={buildFullImageUrl(selectedCanvas.imageServiceId)}
+					src={buildDisplayImageUrl(
+						selectedCanvas.imageServiceId,
+						selectedCanvas.width,
+						selectedCanvas.height
+					)}
 					alt={`ページ ${selectedCanvas.label}`}
 				/>
 			</div>
