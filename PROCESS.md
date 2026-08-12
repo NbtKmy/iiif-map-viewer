@@ -53,8 +53,8 @@ DESIGN.md §25 Phase2に対応。目的: Viewerのannotation表示ロジック�
 
 DESIGN.md §25 Phase3に対応。目的: annotations.jsonを実際に作成できるようにする。
 
-- [ ] `src/routes/editor/+page.svelte` ルート作成
-- [ ] IIIF Image Service URL入力→画像表示
+- [x] `src/routes/editor/+page.svelte` ルート作成
+- [x] IIIF Manifest URL入力→Canvas一覧サムネイル表示→選択→画像表示（IIIF Image Service URL直接入力は§8.2改訂によりMVPスコープから除外）
 - [ ] 画像上のドラッグ矩形選択→IIIF原画像ピクセル座標での `xywh` 取得
 - [ ] 地図上でのPoint指定→地理座標から地図画像座標への逆変換（`@allmaps/transform`）
 - [ ] Annotation追加・削除、label/description入力フォーム
