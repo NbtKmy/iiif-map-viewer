@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check
+        run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
       - name: Build
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'

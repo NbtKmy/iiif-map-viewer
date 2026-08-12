@@ -23,9 +23,11 @@
 ### Task 1: IIIF Image API URLビルダー
 
 **Files:**
+
 - Create: `src/lib/iiif/imageApi.ts`
 
 **Interfaces:**
+
 - Consumes: なし（このタスクが最初）
 - Produces:
   - `buildImageUrl(imageServiceId: string, options?: { region?: string; size?: string }): string`
@@ -70,7 +72,8 @@ function buildFullImageUrl(imageServiceId) {
 	return buildImageUrl(imageServiceId);
 }
 
-const serviceId = 'https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif';
+const serviceId =
+	'https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif';
 
 console.assert(
 	buildFullImageUrl(serviceId) === `${serviceId}/full/full/0/default.jpg`,
@@ -103,9 +106,11 @@ git commit -m "feat: add IIIF Image API URL builder"
 ### Task 2: Manifestフェッチ・パース（Presentation API 2.0）
 
 **Files:**
+
 - Create: `src/lib/iiif/manifest.ts`
 
 **Interfaces:**
+
 - Consumes: なし（Task 1とは独立、`imageApi.ts`は使わない）
 - Produces:
   - `type ParsedCanvas = { id: string; label: string; width: number; height: number; imageServiceId: string }`
@@ -183,9 +188,7 @@ export function parseManifest(json: unknown): ParsedManifest {
 	}
 
 	if (!hasPresentation2Context(json['@context'])) {
-		throw new ManifestParseError(
-			'このManifestはIIIF Presentation API 2.0形式ではありません。'
-		);
+		throw new ManifestParseError('このManifestはIIIF Presentation API 2.0形式ではありません。');
 	}
 
 	const sequences = json['sequences'];
@@ -289,7 +292,10 @@ function parseManifest(json) {
 
 const result = parseManifest(manifestJson);
 console.assert(result.canvases.length === 4, `expected 4 canvases, got ${result.canvases.length}`);
-console.assert(result.canvases[0].label === '1', `expected first label "1", got ${result.canvases[0].label}`);
+console.assert(
+	result.canvases[0].label === '1',
+	`expected first label "1", got ${result.canvases[0].label}`
+);
 console.assert(
 	result.canvases[0].imageServiceId ===
 		'https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif',
@@ -327,9 +333,11 @@ git commit -m "feat: add IIIF Presentation API 2.0 manifest parser"
 ### Task 3: サムネイルストリップコンポーネント
 
 **Files:**
+
 - Create: `src/lib/components/ManifestThumbnailStrip.svelte`
 
 **Interfaces:**
+
 - Consumes:
   - `ParsedCanvas` type from `$lib/iiif/manifest`（Task 2）
   - `buildThumbnailUrl(imageServiceId: string, maxHeight?: number): string` from `$lib/iiif/imageApi`（Task 1）
@@ -362,7 +370,11 @@ git commit -m "feat: add IIIF Presentation API 2.0 manifest parser"
 			class:selected={canvas.id === selectedCanvasId}
 			onclick={() => onselect(canvas)}
 		>
-			<img src={buildThumbnailUrl(canvas.imageServiceId)} alt={`ページ ${canvas.label}`} loading="lazy" />
+			<img
+				src={buildThumbnailUrl(canvas.imageServiceId)}
+				alt={`ページ ${canvas.label}`}
+				loading="lazy"
+			/>
 			<span class="label">{canvas.label}</span>
 		</button>
 	{/each}
@@ -423,10 +435,12 @@ git commit -m "feat: add manifest thumbnail strip component"
 ### Task 4: Editorページ統合
 
 **Files:**
+
 - Create: `src/routes/editor/+page.svelte`
 - Modify: `PROCESS.md`（Phase 3のチェックリスト更新）
 
 **Interfaces:**
+
 - Consumes:
   - `fetchManifest`, `ManifestParseError`, `ParsedCanvas` from `$lib/iiif/manifest`（Task 2）
   - `buildFullImageUrl` from `$lib/iiif/imageApi`（Task 1）
@@ -614,6 +628,7 @@ Expected: `OK: all assertions passed`、`(none)`（pageerrorなし）
 Read `/tmp/pw-check/editor-page1.png` と `/tmp/pw-check/editor-page2.png` を確認する。
 
 Expected:
+
 - `editor-page1.png`: サムネイル4枚が横に並び、1枚目（ページ1）が枠線でハイライトされ、メイン画像エリアに1ページ目の全体画像が表示されている
 - `editor-page2.png`: 2枚目（ページ2）がハイライトされ、メイン画像エリアの画像が2ページ目に切り替わっている
 
