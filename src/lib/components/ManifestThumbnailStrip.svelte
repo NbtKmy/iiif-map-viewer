@@ -13,12 +13,11 @@
 	} = $props();
 </script>
 
-<div class="thumbnail-strip" role="tablist" aria-label="ページ選択">
+<div class="thumbnail-strip" role="group" aria-label="ページ選択">
 	{#each canvases as canvas (canvas.id)}
 		<button
 			type="button"
-			role="tab"
-			aria-selected={canvas.id === selectedCanvasId}
+			aria-pressed={canvas.id === selectedCanvasId}
 			class:selected={canvas.id === selectedCanvasId}
 			onclick={() => onselect(canvas)}
 		>
