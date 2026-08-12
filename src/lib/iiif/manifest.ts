@@ -105,13 +105,21 @@ export async function fetchManifest(url: string): Promise<ParsedManifest> {
 	try {
 		response = await fetch(url);
 	} catch {
-		throw new ManifestParseError('Manifestを取得できませんでした（ネットワークエラー）。');
+		throw new ManifestParseError(
+			'Manifestを取得できませんでした（ネットワークまたはCORSエラー）。'
+		);
 	}
 
 	if (!response.ok) {
 		throw new ManifestParseError(`Manifestを取得できませんでした（HTTP ${response.status}）。`);
 	}
 
-	const json = await response.json();
+	let json: unknown;
+	try {
+		json = await response.json();
+	} catch {
+		throw new ManifestParseError('Manifestの内容をJSONとして解釈できませんでした。');
+	}
+
 	return parseManifest(json);
 }

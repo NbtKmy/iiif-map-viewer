@@ -21,6 +21,7 @@
 			canvases = manifest.canvases;
 			selectedCanvas = manifest.canvases[0];
 		} catch (error) {
+			console.error(error);
 			loadError =
 				error instanceof ManifestParseError ? error.message : 'Manifestを読み込めませんでした。';
 		} finally {
