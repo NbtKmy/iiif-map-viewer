@@ -67,4 +67,9 @@
 	.label {
 		font-size: 0.75rem;
 	}
+
+	button.selected .label {
+		font-weight: bold;
+		text-decoration: underline;
+	}
 </style>
