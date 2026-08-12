@@ -1,0 +1,53 @@
+{
+	"version": 1,
+	"map": {
+		"georeference": "/data/map-georeference.json"
+	},
+	"annotations": [
+		{
+			"id": "annotation-001",
+			"label": "出島東側についての記述",
+			"description": "出島東側に並ぶ建物群についての記述。",
+			"mapTarget": {
+				"type": "point",
+				"xy": [5780, 3780]
+			},
+			"commentSource": {
+				"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+				"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/0",
+				"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif",
+				"xywh": [300, 250, 700, 450]
+			}
+		},
+		{
+			"id": "annotation-002",
+			"label": "出島中央部についての記述",
+			"description": "出島中央部の街路についての記述。",
+			"mapTarget": {
+				"type": "point",
+				"xy": [3900, 3300]
+			},
+			"commentSource": {
+				"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+				"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/1",
+				"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00002.tif",
+				"xywh": [1200, 900, 650, 400]
+			}
+		},
+		{
+			"id": "annotation-003",
+			"label": "出島西側についての記述",
+			"description": "出島西側の水路についての記述。",
+			"mapTarget": {
+				"type": "point",
+				"xy": [1400, 2900]
+			},
+			"commentSource": {
+				"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+				"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/2",
+				"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00003.tif",
+				"xywh": [2500, 1600, 800, 500]
+			}
+		}
+	]
+}

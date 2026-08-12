@@ -32,6 +32,7 @@
 		"vite": "^8.0.16"
 	},
 	"dependencies": {
+		"@allmaps/annotation": "1.0.0-beta.37",
 		"@allmaps/maplibre": "1.0.0-beta.43",
 		"@allmaps/transform": "1.0.0-beta.52",
 		"maplibre-gl": "^6.3.0",

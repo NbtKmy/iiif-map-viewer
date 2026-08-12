@@ -37,17 +37,17 @@ DESIGN.md §25 Phase1に対応。目的: Allmapsの表示・座標変換だけ�
 
 DESIGN.md §25 Phase2に対応。目的: Viewerのannotation表示ロジックを検証する。
 
-- [ ] `src/lib/annotations/schema.ts` に `annotations.json` のZodスキーマを定義（DESIGN.md §10）
-- [ ] `src/lib/iiif/` にIIIF Image API region URL生成関数を実装（`{imageService}/{x},{y},{w},{h}/{size}/0/default.jpg`、Image API 2.x/3.x差異を吸収）
-- [ ] ダミーの `static/data/annotations.json`（Point型を2〜3件）を作成
-- [ ] annotations読み込み・Zod検証・不正annotationのスキップ処理を実装（DESIGN.md §15）
-- [ ] 地図上にPointマーカー（番号付き円形ボタン）を表示
-- [ ] マーカークリックでコメントパネルを開閉
-- [ ] コメントパネルにIIIF切り出し画像・title・description・出典・元資料リンクを表示
-- [ ] アクセシビリティ対応（`button`要素、キーボードフォーカス、`aria-label`、`alt`属性、パネルのEsc閉じ）（DESIGN.md §16）
-- [ ] エラー処理: IIIF画像取得失敗時のメッセージ表示、`annotations.json` 取得失敗時のフォールバック（DESIGN.md §15）
+- [x] `src/lib/annotations/schema.ts` に `annotations.json` のZodスキーマを定義（DESIGN.md §10）
+- [x] `src/lib/iiif/` にIIIF Image API region URL生成関数を実装（`{imageService}/{x},{y},{w},{h}/{size}/0/default.jpg`、Image API 2.x/3.x差異を吸収）
+- [x] ダミーの `static/data/annotations.json`（Point型を2〜3件）を作成
+- [x] annotations読み込み・Zod検証・不正annotationのスキップ処理を実装（DESIGN.md §15）
+- [x] 地図上にPointマーカー（番号付き円形ボタン）を表示
+- [x] マーカークリックでコメントパネルを開閉
+- [x] コメントパネルにIIIF切り出し画像・title・description・出典・元資料リンクを表示
+- [x] アクセシビリティ対応（`button`要素、キーボードフォーカス、`aria-label`、`alt`属性、パネルのEsc閉じ）（DESIGN.md §16）
+- [x] エラー処理: IIIF画像取得失敗時のメッセージ表示、`annotations.json` 取得失敗時のフォールバック（DESIGN.md §15）
 
-**完了条件**: ダミーデータのPointが地図上の正しい位置に表示され、クリックでIIIF切り出し画像を含むコメントパネルが開く。
+**完了条件**: 満たした。Playwrightでdevサーバーを起動し実際にブラウザで確認 — ダミーデータのPoint 3件が出島の地図画像上の正しい位置に表示され、クリックでIIIF切り出し画像・label・description・元資料リンクを含むコメントパネルが開くこと、Escキーでの閉じ、Tabキーによるマーカーへのキーボードフォーカス、`annotations.json`取得失敗時・IIIF画像取得失敗時のエラー表示を確認済み。
 
 ## Phase 3: Editor実装
 
