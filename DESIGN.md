@@ -294,7 +294,8 @@ EditorはViewerとは別ルート `/editor/` とする。
 │ Editor                                                       │
 ├───────────────────────────────┬──────────────────────────────┤
 │ Comment Resource              │ Map                          │
-│                               │                              │
+│ Manifest URL: [____________] [読み込み]                       │
+│ [①][②][③][④] ← サムネイルストリップ（横スクロール）         │
 │ ┌───────────────────────────┐ │                              │
 │ │                           │ │           [target]           │
 │ │       IIIF image          │ │                              │
@@ -313,12 +314,18 @@ EditorはViewerとは別ルート `/editor/` とする。
 
 ### 8.2 コメント資料の入力
 
-Editorは最低限以下の入力方式をサポートする。
+Editorへの資料入力はIIIF Manifest URLに一本化する（対応: IIIF Presentation API 2.0。`sequences[].canvases[].images[].resource.service`構造を前提とする。3.0形式のManifestは現状未対応、必要になった時点で拡張する）。
 
-1.  IIIF Manifest URL
-2.  IIIF Image Service URL
+1.  Manifest URLを入力し「読み込み」を実行する。
+2.  取得したManifestのCanvas一覧をサムネイルストリップとして表示する。各サムネイルはIIIF Image APIで動的に生成する小サイズ画像（例: `{imageService}/full/,150/0/default.jpg`）であり、物理的な画像ファイルは生成しない（§21.1のSource of Truthの原則に従う）。
+3.  読み込み直後は先頭のCanvas（1ページ目）を自動選択する。
+4.  サムネイルをクリックすると選択が切り替わり、メインの画像編集エリアに該当Canvasの画像が表示される。
 
-Manifestを指定した場合、Canvas一覧から対象画像を選択できるようにする。
+選択中のCanvasの`id`（Canvas URI）とImage Service `@id`が、コメント領域選択時に`commentSource.canvas` / `commentSource.imageService`として保存される。
+
+Manifest取得に失敗した場合（CORS・404等）や、想定する構造を持たない場合は、サムネイルストリップを表示せずエラーメッセージを表示する（§15参照）。個別のサムネイル画像の読み込みに失敗した場合は、そのサムネイルのみ破損画像プレースホルダーを表示し、他のサムネイルには影響しない。
+
+サムネイルをクリックしてページを切り替えると、選択中の矩形選択（未保存のドラフト）はクリアされる。保存済みのAnnotationには影響しない。
 
 ### 8.3 コメント領域選択
 
@@ -653,7 +660,9 @@ ViewerではAnnotationへの直接リンクを可能にする。
 
 ### Editor MVP
 
-- IIIF Image Service URL入力
+- IIIF Manifest URL入力
+- Manifest読み込み・Canvas一覧のサムネイルストリップ表示
+- サムネイルクリックによるページ選択（読み込み直後は1ページ目を自動選択）
 - コメント画像表示
 - 矩形選択
 - `xywh` 取得
@@ -672,15 +681,15 @@ ViewerではAnnotationへの直接リンクを可能にする。
 優先度順：
 
 1.  地図側Rectangle指定
-2.  IIIF Manifest読み込みとCanvas選択
-3.  Annotation編集
-4.  Annotation並べ替え
-5.  Viewerで対象範囲ハイライト
-6.  Annotation直接リンク
-7.  元CanvasをIIIF Viewerで開く
-8.  Polygon対応
-9.  W3C Web Annotation / IIIF Annotation export
-10. 複数地図対応
+2.  Annotation編集
+3.  Annotation並べ替え
+4.  Viewerで対象範囲ハイライト
+5.  Annotation直接リンク
+6.  元CanvasをIIIF Viewerで開く
+7.  Polygon対応
+8.  W3C Web Annotation / IIIF Annotation export
+9.  複数地図対応
+10. IIIF Presentation API 3.0形式のManifest対応
 
 ---
 
@@ -734,6 +743,8 @@ APIへの変換を行う。
 
 外部IIIFサーバー、Georeference
 Annotation、Manifestをブラウザから取得するため、各配信元のCORS設定を確認する必要がある。
+
+対象資料（`kokusho.nijl.ac.jp`）のManifestエンドポイントおよびIIIF Image API（`info.json`等）は`Access-Control-Allow-Origin: *`を返すことを確認済み。他機関の資料を扱う場合は資料ごとに確認する。
 
 ### Allmaps座標変換API
 
