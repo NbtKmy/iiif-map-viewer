@@ -82,14 +82,21 @@ export function parseManifest(json: unknown): ParsedManifest {
 		.map(parseCanvas)
 		.filter((canvas): canvas is ParsedCanvas => canvas !== null);
 
-	if (canvases.length === 0) {
+	const seenIds = new Set<string>();
+	const dedupedCanvases = canvases.filter((canvas) => {
+		if (seenIds.has(canvas.id)) return false;
+		seenIds.add(canvas.id);
+		return true;
+	});
+
+	if (dedupedCanvases.length === 0) {
 		throw new ManifestParseError('Manifestに有効なCanvasが含まれていません。');
 	}
 
 	return {
 		id: typeof json['@id'] === 'string' ? json['@id'] : '',
 		label: typeof json['label'] === 'string' ? json['label'] : '',
-		canvases
+		canvases: dedupedCanvases
 	};
 }
 
