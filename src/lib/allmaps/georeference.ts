@@ -17,25 +17,29 @@ export async function loadGeoreferencedMap(
 	let response: Response;
 	try {
 		response = await fetch(url);
-	} catch {
-		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。');
+	} catch (cause) {
+		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。', { cause });
 	}
 
 	if (!response.ok) {
-		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。');
+		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。', {
+			cause: new Error(`HTTP ${response.status}`)
+		});
 	}
 
 	let georeferenceAnnotation: unknown;
 	try {
 		georeferenceAnnotation = await response.json();
-	} catch {
-		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。');
+	} catch (cause) {
+		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。', { cause });
 	}
 
 	const results = warpedMapLayer.addGeoreferenceAnnotation(georeferenceAnnotation);
 	const firstError = results.find((result) => result instanceof Error);
 	if (firstError) {
-		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。');
+		throw new GeoreferenceLoadError('ジオリファレンス地図を読み込めませんでした。', {
+			cause: firstError
+		});
 	}
 
 	const bounds = warpedMapLayer.getBounds();
