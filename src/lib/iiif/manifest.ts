@@ -129,6 +129,22 @@ export function parseManifest(json: unknown): ParsedManifest {
 	};
 }
 
+const KOKUSHO_CANVAS_URL_PATTERN =
+	/^(https:\/\/kokusho\.nijl\.ac\.jp\/biblio\/\d+)\/canvas\/(\d+)$/;
+
+/**
+ * kokusho.nijl.ac.jpのCanvas @idは人間が閲覧できるページではなくAPI識別子のため、
+ * 同サイトのビューアURL（/biblio/{id}/{page}?ln=ja、page = canvas番号+1）へ変換する。
+ * 他機関のCanvas URIはこのパターンに一致しないため、そのまま返す。
+ */
+export function resolveCanvasViewerUrl(canvasId: string): string {
+	const match = canvasId.match(KOKUSHO_CANVAS_URL_PATTERN);
+	if (!match) return canvasId;
+	const [, biblioBaseUrl, canvasIndex] = match;
+	const page = Number(canvasIndex) + 1;
+	return `${biblioBaseUrl}/${page}?ln=ja`;
+}
+
 export async function fetchManifest(url: string): Promise<ParsedManifest> {
 	let response: Response;
 	try {

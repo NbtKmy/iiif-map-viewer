@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Annotation } from '$lib/annotations/schema';
 	import { buildCommentImageUrl } from '$lib/iiif/imageApi';
+	import { resolveCanvasViewerUrl } from '$lib/iiif/manifest';
 
 	let {
 		annotation,
@@ -12,6 +13,7 @@
 
 	let imageErrorAnnotationId = $state<string | undefined>(undefined);
 	const imageError = $derived(imageErrorAnnotationId === annotation.id);
+	const sourceUrl = $derived(resolveCanvasViewerUrl(annotation.commentSource.canvas));
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
@@ -46,9 +48,7 @@
 	{/if}
 
 	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- 外部IIIF資料への絶対URLのため対象外 -->
-	<a class="source-link" href={annotation.commentSource.canvas} target="_blank" rel="noreferrer">
-		元資料を見る
-	</a>
+	<a class="source-link" href={sourceUrl} target="_blank" rel="noreferrer"> 元資料を見る </a>
 </aside>
 
 <style>
