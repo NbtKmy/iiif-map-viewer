@@ -441,16 +441,20 @@ Annotationを直接編集するのではなく、アプリケーション用の�
 				"type": "point",
 				"xy": [4201.4, 2510.8]
 			},
-			"commentSource": {
-				"manifest": "https://example.org/iiif/manifest",
-				"canvas": "https://example.org/iiif/canvas/1",
-				"imageService": "https://example.org/iiif/image/1",
-				"xywh": [1350, 840, 620, 310]
-			}
+			"commentSources": [
+				{
+					"manifest": "https://example.org/iiif/manifest",
+					"canvas": "https://example.org/iiif/canvas/1",
+					"imageService": "https://example.org/iiif/image/1",
+					"xywh": [1350, 840, 620, 310]
+				}
+			]
 		}
 	]
 }
 ```
+
+`commentSources`は配列であり、1つのannotationに複数のIIIF切り出し画像（別ページ・別資料からの複数コメント）を紐付けられる。
 
 ### 10.2 Rectangle
 

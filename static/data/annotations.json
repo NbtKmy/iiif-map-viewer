@@ -12,12 +12,14 @@
 				"type": "point",
 				"xy": [5780, 3780]
 			},
-			"commentSource": {
-				"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
-				"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/0",
-				"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif",
-				"xywh": [300, 250, 700, 450]
-			}
+			"commentSources": [
+				{
+					"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+					"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/0",
+					"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif",
+					"xywh": [300, 250, 700, 450]
+				}
+			]
 		},
 		{
 			"id": "annotation-002",
@@ -27,12 +29,14 @@
 				"type": "point",
 				"xy": [3900, 3300]
 			},
-			"commentSource": {
-				"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
-				"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/1",
-				"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00002.tif",
-				"xywh": [1200, 900, 650, 400]
-			}
+			"commentSources": [
+				{
+					"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+					"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/1",
+					"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00002.tif",
+					"xywh": [1200, 900, 650, 400]
+				}
+			]
 		},
 		{
 			"id": "annotation-003",
@@ -42,12 +46,14 @@
 				"type": "point",
 				"xy": [1400, 2900]
 			},
-			"commentSource": {
-				"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
-				"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/2",
-				"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00003.tif",
-				"xywh": [2500, 1600, 800, 500]
-			}
+			"commentSources": [
+				{
+					"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+					"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/2",
+					"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00003.tif",
+					"xywh": [2500, 1600, 800, 500]
+				}
+			]
 		}
 	]
 }

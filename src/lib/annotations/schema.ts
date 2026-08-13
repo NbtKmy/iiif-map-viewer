@@ -1,21 +1,46 @@
 import { z } from 'zod';
 
+const MAP_IMAGE_WIDTH = 7302;
+const MAP_IMAGE_HEIGHT = 4891;
+
 const PointTargetSchema = z.object({
 	type: z.literal('point'),
-	xy: z.tuple([z.number().nonnegative(), z.number().nonnegative()])
+	xy: z.tuple([
+		z.number().nonnegative().max(MAP_IMAGE_WIDTH),
+		z.number().nonnegative().max(MAP_IMAGE_HEIGHT)
+	])
 });
 
 const RectTargetSchema = z.object({
 	type: z.literal('rect'),
 	xywh: z.tuple([
-		z.number().nonnegative(),
-		z.number().nonnegative(),
+		z.number().nonnegative().max(MAP_IMAGE_WIDTH),
+		z.number().nonnegative().max(MAP_IMAGE_HEIGHT),
 		z.number().positive(),
 		z.number().positive()
 	])
 });
 
-const MapTargetSchema = z.discriminatedUnion('type', [PointTargetSchema, RectTargetSchema]);
+const MapTargetSchema = z
+	.discriminatedUnion('type', [PointTargetSchema, RectTargetSchema])
+	.superRefine((target, ctx) => {
+		if (target.type !== 'rect') return;
+		const [x, y, w, h] = target.xywh;
+		if (x + w > MAP_IMAGE_WIDTH) {
+			ctx.addIssue({
+				code: 'custom',
+				message: `Rectangleの範囲が地図画像の幅(${MAP_IMAGE_WIDTH})を超えています。`,
+				path: ['xywh']
+			});
+		}
+		if (y + h > MAP_IMAGE_HEIGHT) {
+			ctx.addIssue({
+				code: 'custom',
+				message: `Rectangleの範囲が地図画像の高さ(${MAP_IMAGE_HEIGHT})を超えています。`,
+				path: ['xywh']
+			});
+		}
+	});
 
 const CommentSourceSchema = z.object({
 	manifest: z.string().min(1),
@@ -34,7 +59,7 @@ export const AnnotationSchema = z.object({
 	label: z.string().min(1),
 	description: z.string().default(''),
 	mapTarget: MapTargetSchema,
-	commentSource: CommentSourceSchema
+	commentSources: z.array(CommentSourceSchema).min(1)
 });
 
 export const AnnotationsFileSchema = z

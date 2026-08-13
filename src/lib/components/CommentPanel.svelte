@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { Annotation } from '$lib/annotations/schema';
 	import { buildCommentImageUrl } from '$lib/iiif/imageApi';
 	import { resolveCanvasViewerUrl } from '$lib/iiif/manifest';
@@ -11,9 +12,16 @@
 		onclose: () => void;
 	} = $props();
 
-	let imageErrorAnnotationId = $state<string | undefined>(undefined);
-	const imageError = $derived(imageErrorAnnotationId === annotation.id);
-	const sourceUrl = $derived(resolveCanvasViewerUrl(annotation.commentSource.canvas));
+	let erroredIndexes = new SvelteSet<number>();
+
+	$effect(() => {
+		void annotation.id;
+		erroredIndexes.clear();
+	});
+
+	function handleImageError(index: number) {
+		erroredIndexes.add(index);
+	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
@@ -29,26 +37,34 @@
 
 	<h2>{annotation.label}</h2>
 
-	{#if imageError}
-		<p class="image-error">画像を取得できませんでした。</p>
-	{:else}
-		<img
-			class="comment-image"
-			src={buildCommentImageUrl(
-				annotation.commentSource.imageService,
-				annotation.commentSource.xywh
-			)}
-			alt={annotation.label}
-			onerror={() => (imageErrorAnnotationId = annotation.id)}
-		/>
-	{/if}
+	{#each annotation.commentSources as source, index (index)}
+		<figure class="comment-source">
+			{#if erroredIndexes.has(index)}
+				<p class="image-error">画像を取得できませんでした。</p>
+			{:else}
+				<img
+					class="comment-image"
+					src={buildCommentImageUrl(source.imageService, source.xywh)}
+					alt={annotation.label}
+					onerror={() => handleImageError(index)}
+				/>
+			{/if}
+			<!-- eslint-disable svelte/no-navigation-without-resolve -- 外部IIIF資料への絶対URLのため対象外 -->
+			<a
+				class="source-link"
+				href={resolveCanvasViewerUrl(source.canvas)}
+				target="_blank"
+				rel="noreferrer"
+			>
+				元資料を見る
+			</a>
+			<!-- eslint-enable svelte/no-navigation-without-resolve -->
+		</figure>
+	{/each}
 
 	{#if annotation.description}
 		<p class="description">{annotation.description}</p>
 	{/if}
-
-	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- 外部IIIF資料への絶対URLのため対象外 -->
-	<a class="source-link" href={sourceUrl} target="_blank" rel="noreferrer"> 元資料を見る </a>
 </aside>
 
 <style>
@@ -82,11 +98,15 @@
 		font-size: 1.1rem;
 	}
 
+	.comment-source {
+		margin: 0 0 1.5rem 0;
+	}
+
 	.comment-image {
 		display: block;
 		width: 100%;
 		height: auto;
-		margin-bottom: 1rem;
+		margin-bottom: 0.5rem;
 	}
 
 	.image-error {
@@ -99,7 +119,6 @@
 
 	.source-link {
 		display: inline-block;
-		margin-top: 1rem;
 	}
 
 	@media (max-width: 640px) {
