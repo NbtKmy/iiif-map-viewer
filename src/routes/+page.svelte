@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { base } from '$app/paths';
-	import { Map as MaplibreMap, Marker, setWorkerUrl } from 'maplibre-gl';
-	import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+	import { Map as MaplibreMap, Marker } from 'maplibre-gl';
 	import { WarpedMapLayer } from '@allmaps/maplibre';
-	import { parseAnnotation } from '@allmaps/annotation';
-	import { GcpTransformer } from '@allmaps/transform';
+	import type { GcpTransformer } from '@allmaps/transform';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fetchAnnotations } from '$lib/annotations/load';
 	import type { Annotation } from '$lib/annotations/schema';
 	import CommentPanel from '$lib/components/CommentPanel.svelte';
+	import { ensureMaplibreWorker } from '$lib/allmaps/maplibreSetup';
+	import { loadGeoreferencedMap } from '$lib/allmaps/georeference';
 
-	setWorkerUrl(maplibreWorkerUrl);
+	ensureMaplibreWorker();
 
 	let mapContainer: HTMLDivElement;
 	let map: MaplibreMap | undefined;
@@ -65,26 +65,12 @@
 			let transformer: GcpTransformer | undefined;
 
 			try {
-				const response = await fetch(`${base}/data/map-georeference.json`);
-				if (!response.ok) {
-					throw new Error(`HTTP ${response.status}`);
-				}
-				const georeferenceAnnotation = await response.json();
-				const results = warpedMapLayer!.addGeoreferenceAnnotation(georeferenceAnnotation);
-				const firstError = results.find((result) => result instanceof Error);
-				if (firstError) {
-					throw firstError;
-				}
-
-				const bounds = warpedMapLayer!.getBounds();
-				if (bounds) {
-					map!.fitBounds(bounds, { padding: 40 });
-				}
-
-				const georeferencedMaps = parseAnnotation(georeferenceAnnotation);
-				if (georeferencedMaps.length > 0) {
-					transformer = GcpTransformer.fromGeoreferencedMap(georeferencedMaps[0]);
-				}
+				const result = await loadGeoreferencedMap(
+					`${base}/data/map-georeference.json`,
+					map!,
+					warpedMapLayer!
+				);
+				transformer = result.transformer;
 			} catch (error) {
 				loadError = 'ジオリファレンス地図を読み込めませんでした。';
 				console.error(error);
