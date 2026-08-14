@@ -3,6 +3,13 @@
 	import { buildDisplayImageUrl } from '$lib/iiif/imageApi';
 	import ManifestThumbnailStrip from '$lib/components/ManifestThumbnailStrip.svelte';
 	import EditorMap from '$lib/components/EditorMap.svelte';
+	import RegionSelector from '$lib/components/RegionSelector.svelte';
+
+	let lastSelectedRegion = $state<[number, number, number, number] | undefined>(undefined);
+
+	function handleRegionSelect(xywh: [number, number, number, number]) {
+		lastSelectedRegion = xywh;
+	}
 
 	let manifestUrl = $state('');
 	let canvases = $state<ParsedCanvas[]>([]);
@@ -68,16 +75,20 @@
 		{/if}
 
 		{#if selectedCanvas}
-			<div class="image-area">
-				<img
-					src={buildDisplayImageUrl(
-						selectedCanvas.imageServiceId,
-						selectedCanvas.width,
-						selectedCanvas.height
-					)}
-					alt={`ページ ${selectedCanvas.label}`}
-				/>
-			</div>
+			<RegionSelector
+				imageUrl={buildDisplayImageUrl(
+					selectedCanvas.imageServiceId,
+					selectedCanvas.width,
+					selectedCanvas.height
+				)}
+				canvasWidth={selectedCanvas.width}
+				canvasHeight={selectedCanvas.height}
+				onselect={handleRegionSelect}
+			/>
+		{/if}
+
+		{#if lastSelectedRegion}
+			<p>選択領域: {lastSelectedRegion.join(', ')}</p>
 		{/if}
 	</section>
 
@@ -111,12 +122,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-	}
-
-	.image-area img {
-		max-width: 100%;
-		max-height: 60vh;
-		object-fit: contain;
 	}
 
 	.error {
