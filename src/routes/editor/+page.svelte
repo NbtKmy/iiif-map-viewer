@@ -2,12 +2,19 @@
 	import { fetchManifest, ManifestParseError, type ParsedCanvas } from '$lib/iiif/manifest';
 	import { buildDisplayImageUrl } from '$lib/iiif/imageApi';
 	import ManifestThumbnailStrip from '$lib/components/ManifestThumbnailStrip.svelte';
+	import EditorMap from '$lib/components/EditorMap.svelte';
 
 	let manifestUrl = $state('');
 	let canvases = $state<ParsedCanvas[]>([]);
 	let selectedCanvas = $state<ParsedCanvas | undefined>(undefined);
 	let loadError = $state<string | undefined>(undefined);
 	let isLoading = $state(false);
+
+	let selectedPoint = $state<[number, number] | undefined>(undefined);
+
+	function handleMapSelectPoint(point: [number, number]) {
+		selectedPoint = point;
+	}
 
 	async function handleLoadManifest(event: SubmitEvent) {
 		event.preventDefault();
@@ -73,6 +80,16 @@
 			</div>
 		{/if}
 	</section>
+
+	<section class="map-target">
+		<h2>Map</h2>
+		<div class="map-area">
+			<EditorMap {selectedPoint} onselectpoint={handleMapSelectPoint} />
+		</div>
+		{#if selectedPoint}
+			<p>選択中の座標: {selectedPoint[0].toFixed(1)}, {selectedPoint[1].toFixed(1)}</p>
+		{/if}
+	</section>
 </div>
 
 <style>
@@ -107,5 +124,16 @@
 		background: #fee;
 		padding: 0.5rem 1rem;
 		border-radius: 4px;
+	}
+
+	.map-target {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-top: 1rem;
+	}
+
+	.map-area {
+		height: 400px;
 	}
 </style>
