@@ -65,19 +65,21 @@ DESIGN.md §25 Phase3に対応。目的: annotations.jsonを実際に作成で�
 
 **完了条件**: 満たした。Playwrightでdevサーバーを起動し実際にブラウザで確認 — Manifest読み込み→ドラッグ矩形選択で複数のコメント画像領域を追加→地図クリックでPoint指定（IIIF原画像座標に逆変換）→タイトル入力してAnnotation追加、必須項目未入力時の検証エラー表示、削除ボタンでの一覧からの削除、Export JSONでのダウンロードと`version/map/annotations`形式の確認、ダウンロードしたファイルの再importによる復元、不正JSON（`georeference`欠落）import時のエラー表示、`npm run build`でのSSR/prerenderクラッシュ無し、localStorageへの自動保存とリロード時の復元・「ドラフトをクリア」ボタンでの消去を確認済み。
 
-## Phase 4: 公開ワークフロー確認
+## Phase 4: 公開ワークフロー確認（完了）
 
 - [x] `annotations.json` を `static/data/` に配置（Phase2/3で作成済みのダミーデータ3件をそのまま採用）
 - [x] `scripts/validate-annotations.ts` を実装し `npm run validate:annotations` で `static/data/annotations.json` を検証できるようにする（CLAUDE.md記載とのズレを解消）
-- [x] commit → push → GitHub Actions自動デプロイを確認（コミット71bed68, 4292504とも成功確認済み）
-- [ ] DESIGN.md §23の完成条件をすべて確認:
+- [x] commit → push → GitHub Actions自動デプロイを確認（コミット71bed68, 4292504, 8789618とも成功確認済み）
+- [x] DESIGN.md §23の完成条件をすべて確認:
   - [x] 静的ホスティングだけでViewerが動作する（GitHub Pages公開URL https://nbtkmy.github.io/iiif-map-viewer/ で確認済み。バグ修正・ズーム機能追加はEditor側のみの変更でViewerコードには影響しないため引き続き有効）
   - [x] 出島のIIIF画像が現代地図上に正しく重なる
   - [x] `annotations.json` の各Pointが地図上の正しい位置に表示される
   - [x] マーカーを押すと対応するIIIFコメント領域が表示される
   - [x] Editorだけでコメント領域と地図位置の対応データを作れる
-  - [ ] Editorから出力したJSONをViewerへ置くだけで反映できる（exportまでは確認済みだが、実際に`static/data/annotations.json`を差し替えてViewer側の表示に反映されるかは未検証）
+  - [x] Editorから出力したJSONをViewerへ置くだけで反映できる（Editorで実annotation「Magazins」を作成→Export→`static/data/annotations.json`へ配置→pushのみでViewerに反映、公開URLで確認済み）
   - [x] DB、認証、独自画像サーバーを必要としない（設計上該当機能を実装していないため自明）
+
+**完了条件**: 満たした。GitHub Pages公開URLで、出島の古地図が現代地図上に正しく重なり、`annotations.json`のPoint（Editorで実際に作成した「Magazins」、commentSources2件）が地図上の正しい位置に表示され、マーカークリックで対応するIIIF切り出し画像が表示されることを確認済み。EditorでのManifest読み込み→矩形選択（ズーム機能付き）→地図Point指定→annotation追加→JSON export→`static/data/annotations.json`への配置→commit/pushのみでViewerへ反映される、という一連の公開ワークフローを実データで検証した。DESIGN.md §23の完成条件を全項目満たし、MVP初期バージョンが完成した。
 
 ## MVP後（優先順・DESIGN.md §19）
 
