@@ -67,7 +67,8 @@ DESIGN.md §25 Phase3に対応。目的: annotations.jsonを実際に作成で�
 
 ## Phase 4: 公開ワークフロー確認
 
-- [ ] Editorで作成した `annotations.json` を `static/data/` に配置
+- [x] `annotations.json` を `static/data/` に配置（Phase2/3で作成済みのダミーデータ3件をそのまま採用）
+- [x] `scripts/validate-annotations.ts` を実装し `npm run validate:annotations` で `static/data/annotations.json` を検証できるようにする（CLAUDE.md記載とのズレを解消）
 - [ ] commit → push → GitHub Actions自動デプロイを確認
 - [ ] DESIGN.md §23の完成条件をすべて確認:
   - [ ] 静的ホスティングだけでViewerが動作する
