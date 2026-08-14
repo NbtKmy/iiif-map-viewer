@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	let {
 		imageUrl,
 		canvasWidth,
@@ -12,10 +14,20 @@
 	} = $props();
 
 	const MIN_DRAG_SIZE = 4;
+	const MAX_HEIGHT_VH = 60;
+	const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
+	const DEFAULT_ZOOM_INDEX = ZOOM_LEVELS.indexOf(1);
 
 	let containerEl: HTMLDivElement;
+	let wrapperEl: HTMLDivElement;
+	let fitScale = $state(1);
+	let zoomIndex = $state(DEFAULT_ZOOM_INDEX);
 	let dragStart = $state<{ x: number; y: number } | undefined>(undefined);
 	let dragCurrent = $state<{ x: number; y: number } | undefined>(undefined);
+
+	const zoom = $derived(ZOOM_LEVELS[zoomIndex]);
+	const displayWidth = $derived(Math.round(canvasWidth * fitScale * zoom));
+	const displayHeight = $derived(Math.round(canvasHeight * fitScale * zoom));
 
 	const dragRect = $derived(
 		dragStart && dragCurrent
@@ -27,6 +39,33 @@
 				}
 			: undefined
 	);
+
+	function recalcFitScale(width: number, height: number) {
+		if (!wrapperEl) return;
+		const availableWidth = wrapperEl.clientWidth;
+		const maxHeightPx = (window.innerHeight * MAX_HEIGHT_VH) / 100;
+		const widthScale = availableWidth / width;
+		const heightScale = maxHeightPx / height;
+		fitScale = Math.min(widthScale, heightScale, 1);
+	}
+
+	$effect(() => {
+		recalcFitScale(canvasWidth, canvasHeight);
+	});
+
+	onMount(() => {
+		const handleResize = () => recalcFitScale(canvasWidth, canvasHeight);
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	});
+
+	function zoomIn() {
+		zoomIndex = Math.min(zoomIndex + 1, ZOOM_LEVELS.length - 1);
+	}
+
+	function zoomOut() {
+		zoomIndex = Math.max(zoomIndex - 1, 0);
+	}
 
 	function toContainerPoint(event: PointerEvent): { x: number; y: number } {
 		const rect = containerEl.getBoundingClientRect();
@@ -71,34 +110,76 @@
 	}
 </script>
 
-<div
-	class="region-selector"
-	bind:this={containerEl}
-	onpointerdown={handlePointerDown}
-	onpointermove={handlePointerMove}
-	onpointerup={handlePointerUp}
->
-	<img src={imageUrl} alt="コメント資料画像" draggable="false" />
-	{#if dragRect}
+<div class="region-selector-panel">
+	<div class="zoom-controls">
+		<button type="button" onclick={zoomOut} disabled={zoomIndex === 0} aria-label="縮小">
+			−
+		</button>
+		<span>{Math.round(zoom * 100)}%</span>
+		<button
+			type="button"
+			onclick={zoomIn}
+			disabled={zoomIndex === ZOOM_LEVELS.length - 1}
+			aria-label="拡大"
+		>
+			+
+		</button>
+	</div>
+	<div class="region-selector-wrapper" bind:this={wrapperEl}>
 		<div
-			class="drag-box"
-			style={`left:${dragRect.left}px; top:${dragRect.top}px; width:${dragRect.width}px; height:${dragRect.height}px;`}
-		></div>
-	{/if}
+			class="region-selector"
+			bind:this={containerEl}
+			style={`width:${displayWidth}px; height:${displayHeight}px;`}
+			onpointerdown={handlePointerDown}
+			onpointermove={handlePointerMove}
+			onpointerup={handlePointerUp}
+		>
+			<img src={imageUrl} alt="コメント資料画像" draggable="false" />
+			{#if dragRect}
+				<div
+					class="drag-box"
+					style={`left:${dragRect.left}px; top:${dragRect.top}px; width:${dragRect.width}px; height:${dragRect.height}px;`}
+				></div>
+			{/if}
+		</div>
+	</div>
 </div>
 
 <style>
+	.region-selector-panel {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+
+	.zoom-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.zoom-controls button {
+		width: 2rem;
+		height: 2rem;
+	}
+
+	.region-selector-wrapper {
+		max-width: 100%;
+		max-height: 60vh;
+		overflow: auto;
+	}
+
 	.region-selector {
 		position: relative;
-		display: inline-block;
 		cursor: crosshair;
 		touch-action: none;
 	}
 
 	img {
 		display: block;
-		max-width: 100%;
-		max-height: 60vh;
+		width: 100%;
+		height: 100%;
 		user-select: none;
 	}
 
