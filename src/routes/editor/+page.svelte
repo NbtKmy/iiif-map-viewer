@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { fetchManifest, ManifestParseError, type ParsedCanvas } from '$lib/iiif/manifest';
 	import { buildDisplayImageUrl, buildCommentImageUrl } from '$lib/iiif/imageApi';
 	import ManifestThumbnailStrip from '$lib/components/ManifestThumbnailStrip.svelte';
@@ -10,6 +11,11 @@
 		validateAnnotationsFile,
 		downloadAnnotationsFile
 	} from '$lib/annotations/serialize';
+	import {
+		saveAnnotationsDraft,
+		loadAnnotationsDraft,
+		clearAnnotationsDraft
+	} from '$lib/annotations/autosave';
 
 	let manifestUrl = $state('');
 	let manifestId = $state('');
@@ -100,6 +106,7 @@
 		}
 
 		annotations = [...annotations, result.data];
+		saveAnnotationsDraft(annotations);
 
 		draftCommentSources = [];
 		draftPoint = undefined;
@@ -109,10 +116,34 @@
 
 	function handleDeleteAnnotation(id: string) {
 		annotations = annotations.filter((annotation) => annotation.id !== id);
+		saveAnnotationsDraft(annotations);
 	}
 
 	let importError = $state<string | undefined>(undefined);
 	let exportErrors = $state<string[]>([]);
+
+	let restoredFromDraft = $state(false);
+
+	onMount(() => {
+		const draft = loadAnnotationsDraft();
+		if (draft === undefined) return;
+
+		const result = validateAnnotationsFile({
+			version: 1,
+			map: { georeference: '/data/map-georeference.json' },
+			annotations: draft
+		});
+		if (result.valid && result.file.annotations.length > 0) {
+			annotations = result.file.annotations;
+			restoredFromDraft = true;
+		}
+	});
+
+	function handleClearDraft() {
+		clearAnnotationsDraft();
+		annotations = [];
+		restoredFromDraft = false;
+	}
 
 	async function handleImportFile(event: Event) {
 		const input = event.target as HTMLInputElement;
@@ -129,6 +160,7 @@
 				return;
 			}
 			annotations = result.file.annotations;
+			saveAnnotationsDraft(annotations);
 		} catch {
 			importError = 'JSONファイルを読み込めませんでした。';
 		} finally {
@@ -230,6 +262,9 @@
 
 	<section class="annotations-list">
 		<h2>Annotations ({annotations.length})</h2>
+		{#if restoredFromDraft}
+			<p role="status">編集中データをlocalStorageから復元しました。</p>
+		{/if}
 		<ul>
 			{#each annotations as annotation (annotation.id)}
 				<li>
@@ -238,6 +273,7 @@
 				</li>
 			{/each}
 		</ul>
+		<button type="button" onclick={handleClearDraft}>ドラフトをクリア</button>
 	</section>
 
 	<section class="import-export">
