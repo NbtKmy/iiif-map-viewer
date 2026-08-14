@@ -69,15 +69,15 @@ DESIGN.md §25 Phase3に対応。目的: annotations.jsonを実際に作成で�
 
 - [x] `annotations.json` を `static/data/` に配置（Phase2/3で作成済みのダミーデータ3件をそのまま採用）
 - [x] `scripts/validate-annotations.ts` を実装し `npm run validate:annotations` で `static/data/annotations.json` を検証できるようにする（CLAUDE.md記載とのズレを解消）
-- [ ] commit → push → GitHub Actions自動デプロイを確認
+- [x] commit → push → GitHub Actions自動デプロイを確認（コミット71bed68, 4292504とも成功確認済み）
 - [ ] DESIGN.md §23の完成条件をすべて確認:
-  - [ ] 静的ホスティングだけでViewerが動作する
-  - [ ] 出島のIIIF画像が現代地図上に正しく重なる
-  - [ ] `annotations.json` の各Pointが地図上の正しい位置に表示される
-  - [ ] マーカーを押すと対応するIIIFコメント領域が表示される
-  - [ ] Editorだけでコメント領域と地図位置の対応データを作れる
-  - [ ] Editorから出力したJSONをViewerへ置くだけで反映できる
-  - [ ] DB、認証、独自画像サーバーを必要としない
+  - [x] 静的ホスティングだけでViewerが動作する（GitHub Pages公開URL https://nbtkmy.github.io/iiif-map-viewer/ で確認済み。バグ修正・ズーム機能追加はEditor側のみの変更でViewerコードには影響しないため引き続き有効）
+  - [x] 出島のIIIF画像が現代地図上に正しく重なる
+  - [x] `annotations.json` の各Pointが地図上の正しい位置に表示される
+  - [x] マーカーを押すと対応するIIIFコメント領域が表示される
+  - [x] Editorだけでコメント領域と地図位置の対応データを作れる
+  - [ ] Editorから出力したJSONをViewerへ置くだけで反映できる（exportまでは確認済みだが、実際に`static/data/annotations.json`を差し替えてViewer側の表示に反映されるかは未検証）
+  - [x] DB、認証、独自画像サーバーを必要としない（設計上該当機能を実装していないため自明）
 
 ## MVP後（優先順・DESIGN.md §19）
 

@@ -1,59 +1,44 @@
 {
-	"version": 1,
-	"map": {
-		"georeference": "/data/map-georeference.json"
-	},
-	"annotations": [
-		{
-			"id": "annotation-001",
-			"label": "出島東側についての記述",
-			"description": "出島東側に並ぶ建物群についての記述。",
-			"mapTarget": {
-				"type": "point",
-				"xy": [5780, 3780]
-			},
-			"commentSources": [
-				{
-					"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
-					"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/0",
-					"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif",
-					"xywh": [300, 250, 700, 450]
-				}
-			]
-		},
-		{
-			"id": "annotation-002",
-			"label": "出島中央部についての記述",
-			"description": "出島中央部の街路についての記述。",
-			"mapTarget": {
-				"type": "point",
-				"xy": [3900, 3300]
-			},
-			"commentSources": [
-				{
-					"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
-					"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/1",
-					"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00002.tif",
-					"xywh": [1200, 900, 650, 400]
-				}
-			]
-		},
-		{
-			"id": "annotation-003",
-			"label": "出島西側についての記述",
-			"description": "出島西側の水路についての記述。",
-			"mapTarget": {
-				"type": "point",
-				"xy": [1400, 2900]
-			},
-			"commentSources": [
-				{
-					"manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
-					"canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/2",
-					"imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00003.tif",
-					"xywh": [2500, 1600, 800, 500]
-				}
-			]
-		}
-	]
+  "version": 1,
+  "map": {
+    "georeference": "/data/map-georeference.json"
+  },
+  "annotations": [
+    {
+      "id": "annotation-cb178922-6bf3-4162-9b11-4da72574fce0",
+      "label": "Magazins",
+      "description": "倉庫？",
+      "mapTarget": {
+        "type": "point",
+        "xy": [
+          5461.014825895429,
+          3393.915543884039
+        ]
+      },
+      "commentSources": [
+        {
+          "manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+          "canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/0",
+          "imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif",
+          "xywh": [
+            2013,
+            1052,
+            711,
+            105
+          ]
+        },
+        {
+          "manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+          "canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/2",
+          "imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00003.tif",
+          "xywh": [
+            5131,
+            3096,
+            659,
+            565
+          ]
+        }
+      ]
+    }
+  ]
 }
