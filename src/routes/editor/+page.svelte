@@ -29,6 +29,7 @@
 	let draftLabel = $state('');
 	let draftDescription = $state('');
 	let draftError = $state<string | undefined>(undefined);
+	let editingAnnotationId = $state<string | undefined>(undefined);
 
 	let annotations = $state<Annotation[]>([]);
 
@@ -78,7 +79,29 @@
 		draftPoint = point;
 	}
 
-	function handleAddAnnotation(event: SubmitEvent) {
+	function resetDraft() {
+		draftCommentSources = [];
+		draftPoint = undefined;
+		draftLabel = '';
+		draftDescription = '';
+		editingAnnotationId = undefined;
+	}
+
+	function handleEditAnnotation(annotation: Annotation) {
+		draftLabel = annotation.label;
+		draftDescription = annotation.description;
+		draftPoint = annotation.mapTarget.type === 'point' ? annotation.mapTarget.xy : undefined;
+		draftCommentSources = annotation.commentSources;
+		editingAnnotationId = annotation.id;
+		draftError = undefined;
+	}
+
+	function handleCancelEdit() {
+		resetDraft();
+		draftError = undefined;
+	}
+
+	function handleSubmitAnnotation(event: SubmitEvent) {
 		event.preventDefault();
 		draftError = undefined;
 
@@ -92,7 +115,7 @@
 		}
 
 		const candidate = {
-			id: `annotation-${crypto.randomUUID()}`,
+			id: editingAnnotationId ?? `annotation-${crypto.randomUUID()}`,
 			label: draftLabel,
 			description: draftDescription,
 			mapTarget: { type: 'point' as const, xy: draftPoint },
@@ -105,17 +128,33 @@
 			return;
 		}
 
-		annotations = [...annotations, result.data];
+		if (editingAnnotationId) {
+			const targetId = editingAnnotationId;
+			annotations = annotations.map((annotation) =>
+				annotation.id === targetId ? result.data : annotation
+			);
+		} else {
+			annotations = [...annotations, result.data];
+		}
 		saveAnnotationsDraft(annotations);
 
-		draftCommentSources = [];
-		draftPoint = undefined;
-		draftLabel = '';
-		draftDescription = '';
+		resetDraft();
 	}
 
 	function handleDeleteAnnotation(id: string) {
 		annotations = annotations.filter((annotation) => annotation.id !== id);
+		saveAnnotationsDraft(annotations);
+		if (editingAnnotationId === id) {
+			resetDraft();
+		}
+	}
+
+	function handleMoveAnnotation(index: number, direction: -1 | 1) {
+		const targetIndex = index + direction;
+		if (targetIndex < 0 || targetIndex >= annotations.length) return;
+		const next = [...annotations];
+		[next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+		annotations = next;
 		saveAnnotationsDraft(annotations);
 	}
 
@@ -244,8 +283,8 @@
 		{/if}
 	</section>
 
-	<form class="annotation-form" onsubmit={handleAddAnnotation}>
-		<h2>Annotation</h2>
+	<form class="annotation-form" onsubmit={handleSubmitAnnotation}>
+		<h2>{editingAnnotationId ? 'Edit Annotation' : 'Annotation'}</h2>
 
 		<label for="draft-label">Title</label>
 		<input id="draft-label" type="text" bind:value={draftLabel} required />
@@ -257,7 +296,12 @@
 			<p class="error" role="alert">{draftError}</p>
 		{/if}
 
-		<button type="submit">Add annotation</button>
+		<div class="form-actions">
+			<button type="submit">{editingAnnotationId ? 'Update annotation' : 'Add annotation'}</button>
+			{#if editingAnnotationId}
+				<button type="button" onclick={handleCancelEdit}>キャンセル</button>
+			{/if}
+		</div>
 	</form>
 
 	<section class="annotations-list">
@@ -270,10 +314,31 @@
 			<p role="status">編集中データをlocalStorageから復元しました。</p>
 		{/if}
 		<ul>
-			{#each annotations as annotation (annotation.id)}
-				<li>
+			{#each annotations as annotation, index (annotation.id)}
+				<li class:editing={annotation.id === editingAnnotationId}>
 					<span>{annotation.label}</span>
-					<button type="button" onclick={() => handleDeleteAnnotation(annotation.id)}>削除</button>
+					<div class="item-actions">
+						<button
+							type="button"
+							onclick={() => handleMoveAnnotation(index, -1)}
+							disabled={index === 0}
+							aria-label="上へ移動"
+						>
+							↑
+						</button>
+						<button
+							type="button"
+							onclick={() => handleMoveAnnotation(index, 1)}
+							disabled={index === annotations.length - 1}
+							aria-label="下へ移動"
+						>
+							↓
+						</button>
+						<button type="button" onclick={() => handleEditAnnotation(annotation)}>編集</button>
+						<button type="button" onclick={() => handleDeleteAnnotation(annotation.id)}>
+							削除
+						</button>
+					</div>
 				</li>
 			{/each}
 		</ul>
@@ -375,6 +440,11 @@
 		margin-top: 1rem;
 	}
 
+	.form-actions {
+		display: flex;
+		gap: 0.5rem;
+	}
+
 	.annotations-list ul {
 		list-style: none;
 		padding: 0;
@@ -389,6 +459,17 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.5rem;
+		padding: 0.25rem 0.5rem;
+	}
+
+	.annotations-list li.editing {
+		background: #fff3cd;
+		border-radius: 4px;
+	}
+
+	.item-actions {
+		display: flex;
+		gap: 0.25rem;
 	}
 
 	.import-export {

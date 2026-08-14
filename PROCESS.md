@@ -85,8 +85,8 @@ DESIGN.md §25 Phase3に対応。目的: annotations.jsonを実際に作成で�
 
 1. 地図側Rectangle指定
 2. IIIF Manifest読み込みとCanvas選択
-3. Annotation編集
-4. Annotation並べ替え
+3. Annotation編集（完了。Editor一覧の「編集」ボタンでフォーム・地図・矩形領域一覧に既存annotationを読み込み、Update annotationで上書き保存できる）
+4. Annotation並べ替え（完了。Editor一覧の↑↓ボタンでannotations配列の順序を入れ替え可能）
 5. Viewerで対象範囲ハイライト
 6. Annotation直接リンク（`/?annotation=annotation-001`）
 7. 元CanvasをIIIF Viewerで開く導線
