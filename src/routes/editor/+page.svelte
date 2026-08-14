@@ -5,6 +5,11 @@
 	import RegionSelector from '$lib/components/RegionSelector.svelte';
 	import EditorMap from '$lib/components/EditorMap.svelte';
 	import { AnnotationSchema, type Annotation, type CommentSource } from '$lib/annotations/schema';
+	import {
+		buildAnnotationsFile,
+		validateAnnotationsFile,
+		downloadAnnotationsFile
+	} from '$lib/annotations/serialize';
 
 	let manifestUrl = $state('');
 	let manifestId = $state('');
@@ -105,6 +110,42 @@
 	function handleDeleteAnnotation(id: string) {
 		annotations = annotations.filter((annotation) => annotation.id !== id);
 	}
+
+	let importError = $state<string | undefined>(undefined);
+	let exportErrors = $state<string[]>([]);
+
+	async function handleImportFile(event: Event) {
+		const input = event.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		importError = undefined;
+		try {
+			const text = await file.text();
+			const json = JSON.parse(text);
+			const result = validateAnnotationsFile(json);
+			if (!result.valid) {
+				importError = result.errors.join(' / ');
+				return;
+			}
+			annotations = result.file.annotations;
+		} catch {
+			importError = 'JSONファイルを読み込めませんでした。';
+		} finally {
+			input.value = '';
+		}
+	}
+
+	function handleExport() {
+		exportErrors = [];
+		const candidate = buildAnnotationsFile(annotations);
+		const result = validateAnnotationsFile(candidate);
+		if (!result.valid) {
+			exportErrors = result.errors;
+			return;
+		}
+		downloadAnnotationsFile(result.file);
+	}
 </script>
 
 <div class="editor">
@@ -198,6 +239,25 @@
 			{/each}
 		</ul>
 	</section>
+
+	<section class="import-export">
+		<h2>Import / Export</h2>
+
+		<label for="import-json">既存のannotations.jsonを読み込む</label>
+		<input id="import-json" type="file" accept="application/json" onchange={handleImportFile} />
+		{#if importError}
+			<p class="error" role="alert">{importError}</p>
+		{/if}
+
+		<button type="button" onclick={handleExport}>Export JSON</button>
+		{#if exportErrors.length > 0}
+			<ul class="error" role="alert">
+				{#each exportErrors as error, index (index)}
+					<li>{error}</li>
+				{/each}
+			</ul>
+		{/if}
+	</section>
 </div>
 
 <style>
@@ -284,5 +344,12 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.5rem;
+	}
+
+	.import-export {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-top: 1rem;
 	}
 </style>
