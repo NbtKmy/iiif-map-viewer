@@ -262,6 +262,10 @@
 
 	<section class="annotations-list">
 		<h2>Annotations ({annotations.length})</h2>
+		<p class="hint">
+			ここでの編集内容はブラウザのlocalStorageに一時保存されます（正式データではありません）。作業を確定するには「Export
+			JSON」でダウンロードし、`static/data/annotations.json` として保存してください。
+		</p>
 		{#if restoredFromDraft}
 			<p role="status">編集中データをlocalStorageから復元しました。</p>
 		{/if}
@@ -322,6 +326,11 @@
 		background: #fee;
 		padding: 0.5rem 1rem;
 		border-radius: 4px;
+	}
+
+	.hint {
+		color: #555;
+		font-size: 0.875rem;
 	}
 
 	.map-target {

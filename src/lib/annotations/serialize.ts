@@ -9,8 +9,7 @@ export function buildAnnotationsFile(annotations: Annotation[]): AnnotationsFile
 }
 
 export type ValidateResult =
-	| { valid: true; file: AnnotationsFile }
-	| { valid: false; errors: string[] };
+	{ valid: true; file: AnnotationsFile } | { valid: false; errors: string[] };
 
 export function validateAnnotationsFile(candidate: unknown): ValidateResult {
 	const result = AnnotationsFileSchema.safeParse(candidate);
@@ -21,7 +20,10 @@ export function validateAnnotationsFile(candidate: unknown): ValidateResult {
 	return { valid: false, errors };
 }
 
-export function downloadAnnotationsFile(file: AnnotationsFile, filename = 'annotations.json'): void {
+export function downloadAnnotationsFile(
+	file: AnnotationsFile,
+	filename = 'annotations.json'
+): void {
 	const blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' });
 	const url = URL.createObjectURL(blob);
 	const anchor = document.createElement('a');

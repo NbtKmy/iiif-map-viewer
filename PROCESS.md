@@ -55,15 +55,15 @@ DESIGN.md §25 Phase3に対応。目的: annotations.jsonを実際に作成で�
 
 - [x] `src/routes/editor/+page.svelte` ルート作成
 - [x] IIIF Manifest URL入力→Canvas一覧サムネイル表示→選択→画像表示（IIIF Image Service URL直接入力は§8.2改訂によりMVPスコープから除外）
-- [ ] 画像上のドラッグ矩形選択→IIIF原画像ピクセル座標での `xywh` 取得
-- [ ] 地図上でのPoint指定→地理座標から地図画像座標への逆変換（`@allmaps/transform`）
-- [ ] Annotation追加・削除、label/description入力フォーム
-- [ ] `annotations.json` のJSON import（既存データの再編集）
-- [ ] `annotations.json` のJSON export（ファイルダウンロード）
-- [ ] `localStorage` への自動保存（作業中データのバックアップ、正式データではない旨をUIに明示）
-- [ ] 保存前バリデーション（Editor/Viewer共通のZodスキーマを使用、不正データを明示）
+- [x] 画像上のドラッグ矩形選択→IIIF原画像ピクセル座標での `xywh` 取得
+- [x] 地図上でのPoint指定→地理座標から地図画像座標への逆変換（`@allmaps/transform`）
+- [x] Annotation追加・削除、label/description入力フォーム
+- [x] `annotations.json` のJSON import（既存データの再編集）
+- [x] `annotations.json` のJSON export（ファイルダウンロード）
+- [x] `localStorage` への自動保存（作業中データのバックアップ、正式データではない旨をUIに明示）
+- [x] 保存前バリデーション（Editor/Viewer共通のZodスキーマを使用、不正データを明示）
 
-**完了条件**: Editorのみでコメント領域と地図位置の対応データを作成でき、出力したJSONを `static/data/annotations.json` に置くだけでViewerに反映される。
+**完了条件**: 満たした。Playwrightでdevサーバーを起動し実際にブラウザで確認 — Manifest読み込み→ドラッグ矩形選択で複数のコメント画像領域を追加→地図クリックでPoint指定（IIIF原画像座標に逆変換）→タイトル入力してAnnotation追加、必須項目未入力時の検証エラー表示、削除ボタンでの一覧からの削除、Export JSONでのダウンロードと`version/map/annotations`形式の確認、ダウンロードしたファイルの再importによる復元、不正JSON（`georeference`欠落）import時のエラー表示、`npm run build`でのSSR/prerenderクラッシュ無し、localStorageへの自動保存とリロード時の復元・「ドラフトをクリア」ボタンでの消去を確認済み。
 
 ## Phase 4: 公開ワークフロー確認
 
