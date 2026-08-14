@@ -7,7 +7,7 @@
     {
       "id": "annotation-cb178922-6bf3-4162-9b11-4da72574fce0",
       "label": "Magazins",
-      "description": "倉庫？",
+      "description": "倉庫だと思われる",
       "mapTarget": {
         "type": "point",
         "xy": [
@@ -36,6 +36,42 @@
             3096,
             659,
             565
+          ]
+        }
+      ]
+    },
+    {
+      "id": "annotation-c5e43147-ac21-4548-b21e-1ab7b142f2bc",
+      "label": "Pavillon",
+      "description": "パビリオン",
+      "mapTarget": {
+        "type": "point",
+        "xy": [
+          5164.181468140334,
+          3000.1744274795055
+        ]
+      },
+      "commentSources": [
+        {
+          "manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+          "canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/0",
+          "imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00001.tif",
+          "xywh": [
+            2067,
+            2803,
+            558,
+            101
+          ]
+        },
+        {
+          "manifest": "https://kokusho.nijl.ac.jp/biblio/300136604/manifest",
+          "canvas": "https://kokusho.nijl.ac.jp/biblio/300136604/canvas/2",
+          "imageService": "https://kokusho.nijl.ac.jp/api/iiif/300136604/v4/UZHL/UZHL-50005/UZHL-50005-00003.tif",
+          "xywh": [
+            4986,
+            2835,
+            301,
+            335
           ]
         }
       ]
