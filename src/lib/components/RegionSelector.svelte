@@ -22,8 +22,12 @@
 	let wrapperEl: HTMLDivElement;
 	let fitScale = $state(1);
 	let zoomIndex = $state(DEFAULT_ZOOM_INDEX);
+	let mode = $state<'select' | 'pan'>('select');
 	let dragStart = $state<{ x: number; y: number } | undefined>(undefined);
 	let dragCurrent = $state<{ x: number; y: number } | undefined>(undefined);
+	let panStart = $state<
+		{ x: number; y: number; scrollLeft: number; scrollTop: number } | undefined
+	>(undefined);
 
 	const zoom = $derived(ZOOM_LEVELS[zoomIndex]);
 	const displayWidth = $derived(Math.round(canvasWidth * fitScale * zoom));
@@ -77,16 +81,39 @@
 
 	function handlePointerDown(event: PointerEvent) {
 		containerEl.setPointerCapture(event.pointerId);
+
+		if (mode === 'pan') {
+			panStart = {
+				x: event.clientX,
+				y: event.clientY,
+				scrollLeft: wrapperEl.scrollLeft,
+				scrollTop: wrapperEl.scrollTop
+			};
+			return;
+		}
+
 		dragStart = toContainerPoint(event);
 		dragCurrent = dragStart;
 	}
 
 	function handlePointerMove(event: PointerEvent) {
+		if (mode === 'pan') {
+			if (!panStart) return;
+			wrapperEl.scrollLeft = panStart.scrollLeft - (event.clientX - panStart.x);
+			wrapperEl.scrollTop = panStart.scrollTop - (event.clientY - panStart.y);
+			return;
+		}
+
 		if (!dragStart) return;
 		dragCurrent = toContainerPoint(event);
 	}
 
 	function handlePointerUp() {
+		if (mode === 'pan') {
+			panStart = undefined;
+			return;
+		}
+
 		const rect = dragRect;
 		dragStart = undefined;
 		dragCurrent = undefined;
@@ -111,23 +138,44 @@
 </script>
 
 <div class="region-selector-panel">
-	<div class="zoom-controls">
-		<button type="button" onclick={zoomOut} disabled={zoomIndex === 0} aria-label="縮小">
-			−
-		</button>
-		<span>{Math.round(zoom * 100)}%</span>
-		<button
-			type="button"
-			onclick={zoomIn}
-			disabled={zoomIndex === ZOOM_LEVELS.length - 1}
-			aria-label="拡大"
-		>
-			+
-		</button>
+	<div class="toolbar">
+		<div class="zoom-controls">
+			<button type="button" onclick={zoomOut} disabled={zoomIndex === 0} aria-label="縮小">
+				−
+			</button>
+			<span>{Math.round(zoom * 100)}%</span>
+			<button
+				type="button"
+				onclick={zoomIn}
+				disabled={zoomIndex === ZOOM_LEVELS.length - 1}
+				aria-label="拡大"
+			>
+				+
+			</button>
+		</div>
+		<div class="mode-controls" role="group" aria-label="操作モード">
+			<button
+				type="button"
+				class:active={mode === 'select'}
+				aria-pressed={mode === 'select'}
+				onclick={() => (mode = 'select')}
+			>
+				選択
+			</button>
+			<button
+				type="button"
+				class:active={mode === 'pan'}
+				aria-pressed={mode === 'pan'}
+				onclick={() => (mode = 'pan')}
+			>
+				移動
+			</button>
+		</div>
 	</div>
 	<div class="region-selector-wrapper" bind:this={wrapperEl}>
 		<div
 			class="region-selector"
+			class:panning={mode === 'pan'}
 			bind:this={containerEl}
 			style={`width:${displayWidth}px; height:${displayHeight}px;`}
 			onpointerdown={handlePointerDown}
@@ -153,27 +201,78 @@
 		gap: 0.5rem;
 	}
 
-	.zoom-controls {
+	.toolbar {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.zoom-controls,
+	.mode-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.zoom-controls button,
+	.mode-controls button {
+		height: 2rem;
+		border: 1px solid var(--color-border, #d7deda);
+		border-radius: 4px;
+		background: var(--color-surface, #fff);
+		color: var(--color-ink, #1f2b26);
+		font-family: inherit;
+		font-size: 0.85rem;
+		cursor: pointer;
 	}
 
 	.zoom-controls button {
 		width: 2rem;
-		height: 2rem;
+	}
+
+	.mode-controls button {
+		width: auto;
+		padding: 0 0.75rem;
+	}
+
+	.zoom-controls button:hover:not(:disabled),
+	.mode-controls button:hover {
+		border-color: var(--color-accent, #2b6e63);
+	}
+
+	.zoom-controls button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.mode-controls button.active {
+		background: var(--color-accent, #2b6e63);
+		border-color: var(--color-accent, #2b6e63);
+		color: #fff;
 	}
 
 	.region-selector-wrapper {
 		max-width: 100%;
 		max-height: 60vh;
 		overflow: auto;
+		border: 1px solid var(--color-border, #d7deda);
+		border-radius: 6px;
+		background: var(--color-bg, #eef2f0);
 	}
 
 	.region-selector {
 		position: relative;
 		cursor: crosshair;
 		touch-action: none;
+	}
+
+	.region-selector.panning {
+		cursor: grab;
+	}
+
+	.region-selector.panning:active {
+		cursor: grabbing;
 	}
 
 	img {
@@ -185,8 +284,8 @@
 
 	.drag-box {
 		position: absolute;
-		border: 2px solid #e11d48;
-		background: rgba(225, 29, 72, 0.15);
+		border: 2px solid var(--color-accent, #2b6e63);
+		background: rgba(43, 110, 99, 0.15);
 		pointer-events: none;
 	}
 </style>

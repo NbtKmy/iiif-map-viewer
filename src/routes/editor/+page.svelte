@@ -226,7 +226,7 @@
 		<form onsubmit={handleLoadManifest}>
 			<label for="manifest-url">Manifest URL</label>
 			<input id="manifest-url" type="url" bind:value={manifestUrl} required />
-			<button type="submit" disabled={isLoading}>読み込み</button>
+			<button type="submit" class="primary" disabled={isLoading}>読み込み</button>
 		</form>
 
 		{#if isLoading}
@@ -266,7 +266,9 @@
 							src={buildCommentImageUrl(source.imageService, source.xywh)}
 							alt={`追加領域 ${index + 1}`}
 						/>
-						<button type="button" onclick={() => handleRemoveDraftSource(index)}>削除</button>
+						<button type="button" class="danger" onclick={() => handleRemoveDraftSource(index)}
+							>削除</button
+						>
 					</li>
 				{/each}
 			</ul>
@@ -297,9 +299,11 @@
 		{/if}
 
 		<div class="form-actions">
-			<button type="submit">{editingAnnotationId ? 'Update annotation' : 'Add annotation'}</button>
+			<button type="submit" class="primary"
+				>{editingAnnotationId ? 'Update annotation' : 'Add annotation'}</button
+			>
 			{#if editingAnnotationId}
-				<button type="button" onclick={handleCancelEdit}>キャンセル</button>
+				<button type="button" class="secondary" onclick={handleCancelEdit}>キャンセル</button>
 			{/if}
 		</div>
 	</form>
@@ -320,6 +324,7 @@
 					<div class="item-actions">
 						<button
 							type="button"
+							class="secondary"
 							onclick={() => handleMoveAnnotation(index, -1)}
 							disabled={index === 0}
 							aria-label="上へ移動"
@@ -328,21 +333,28 @@
 						</button>
 						<button
 							type="button"
+							class="secondary"
 							onclick={() => handleMoveAnnotation(index, 1)}
 							disabled={index === annotations.length - 1}
 							aria-label="下へ移動"
 						>
 							↓
 						</button>
-						<button type="button" onclick={() => handleEditAnnotation(annotation)}>編集</button>
-						<button type="button" onclick={() => handleDeleteAnnotation(annotation.id)}>
+						<button type="button" class="secondary" onclick={() => handleEditAnnotation(annotation)}
+							>編集</button
+						>
+						<button
+							type="button"
+							class="danger"
+							onclick={() => handleDeleteAnnotation(annotation.id)}
+						>
 							削除
 						</button>
 					</div>
 				</li>
 			{/each}
 		</ul>
-		<button type="button" onclick={handleClearDraft}>ドラフトをクリア</button>
+		<button type="button" class="danger" onclick={handleClearDraft}>ドラフトをクリア</button>
 	</section>
 
 	<section class="import-export">
@@ -354,7 +366,7 @@
 			<p class="error" role="alert">{importError}</p>
 		{/if}
 
-		<button type="button" onclick={handleExport}>Export JSON</button>
+		<button type="button" class="primary" onclick={handleExport}>Export JSON</button>
 		{#if exportErrors.length > 0}
 			<ul class="error" role="alert">
 				{#each exportErrors as error, index (index)}
@@ -367,46 +379,177 @@
 
 <style>
 	.editor {
+		--color-bg: #eef2f0;
+		--color-surface: #ffffff;
+		--color-border: #d7deda;
+		--color-ink: #1f2b26;
+		--color-accent: #2b6e63;
+		--color-accent-hover: #21544b;
+		--color-muted: #5c6b65;
+		--color-danger: #b3261e;
+		--color-danger-bg: #fbeaea;
+		--color-highlight: #fce7a2;
+
 		display: flex;
 		flex-direction: column;
-		height: 100vh;
-		padding: 1rem;
+		gap: 1.5rem;
+		min-height: 100vh;
+		padding: 2rem;
 		box-sizing: border-box;
+		background: var(--color-bg);
+		color: var(--color-ink);
+		font-family:
+			ui-sans-serif,
+			-apple-system,
+			'Segoe UI',
+			sans-serif;
 	}
 
-	.comment-resource {
+	.comment-resource,
+	.map-target,
+	.annotation-form,
+	.annotations-list,
+	.import-export {
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: 6px;
+		padding: 1.25rem 1.5rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0.6rem;
+	}
+
+	.annotation-form {
+		max-width: 560px;
+	}
+
+	.comment-resource h2,
+	.map-target h2,
+	.annotation-form h2,
+	.annotations-list h2,
+	.import-export h2 {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin: 0;
+		font-family: ui-serif, Georgia, serif;
+		font-size: 1.05rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.comment-resource h2::before,
+	.map-target h2::before,
+	.annotation-form h2::before,
+	.annotations-list h2::before,
+	.import-export h2::before {
+		content: '';
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		flex-shrink: 0;
+		background: var(--color-accent);
+		border: 1px solid var(--color-accent-hover);
 	}
 
 	form {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+
+	label {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--color-muted);
+	}
+
+	input[type='text'],
+	input[type='url'],
+	textarea {
+		font-family: inherit;
+		font-size: 0.95rem;
+		padding: 0.5rem 0.65rem;
+		border: 1px solid var(--color-border);
+		border-radius: 4px;
+		background: var(--color-surface);
+		color: var(--color-ink);
+	}
+
+	input:focus,
+	textarea:focus {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 1px;
+		border-color: var(--color-accent);
+	}
+
+	button {
+		font-family: inherit;
+		font-size: 0.9rem;
+		border-radius: 4px;
+		border: 1px solid var(--color-border);
+		background: var(--color-surface);
+		color: var(--color-ink);
+		padding: 0.45rem 0.9rem;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease;
+	}
+
+	button:hover:not(:disabled) {
+		border-color: var(--color-accent);
+	}
+
+	button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	button.primary {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: #fff;
+	}
+
+	button.primary:hover:not(:disabled) {
+		background: var(--color-accent-hover);
+		border-color: var(--color-accent-hover);
+	}
+
+	button.danger {
+		background: transparent;
+		border-color: var(--color-danger);
+		color: var(--color-danger);
+	}
+
+	button.danger:hover:not(:disabled) {
+		background: var(--color-danger-bg);
 	}
 
 	.error {
-		color: #900;
-		background: #fee;
-		padding: 0.5rem 1rem;
+		color: var(--color-danger);
+		background: var(--color-danger-bg);
+		border: 1px solid var(--color-danger);
+		padding: 0.5rem 0.9rem;
 		border-radius: 4px;
+		font-size: 0.9rem;
 	}
 
 	.hint {
-		color: #555;
-		font-size: 0.875rem;
-	}
-
-	.map-target {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-top: 1rem;
+		color: var(--color-muted);
+		font-size: 0.8rem;
+		line-height: 1.5;
 	}
 
 	.map-area {
 		height: 400px;
+		border: 1px solid var(--color-border);
+		border-radius: 6px;
+		overflow: hidden;
 	}
 
 	.draft-sources {
@@ -429,20 +572,19 @@
 		max-width: 160px;
 		max-height: 120px;
 		object-fit: contain;
-		background: #eee;
+		background: var(--color-bg);
+		border: 1px solid var(--color-border);
+		border-radius: 4px;
 	}
 
-	.annotation-form {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		max-width: 480px;
-		margin-top: 1rem;
+	.annotation-form input + label {
+		margin-top: 0.75rem;
 	}
 
 	.form-actions {
 		display: flex;
 		gap: 0.5rem;
+		margin-top: 0.5rem;
 	}
 
 	.annotations-list ul {
@@ -451,7 +593,6 @@
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
 	}
 
 	.annotations-list li {
@@ -459,12 +600,18 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.5rem;
-		padding: 0.25rem 0.5rem;
+		padding: 0.5rem 0.25rem;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.annotations-list li:last-child {
+		border-bottom: none;
 	}
 
 	.annotations-list li.editing {
-		background: #fff3cd;
+		background: var(--color-highlight);
 		border-radius: 4px;
+		padding-left: 0.5rem;
 	}
 
 	.item-actions {
@@ -472,10 +619,13 @@
 		gap: 0.25rem;
 	}
 
-	.import-export {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-top: 1rem;
+	.item-actions button {
+		padding: 0.3rem 0.6rem;
+		font-size: 0.8rem;
+	}
+
+	.import-export > button,
+	.annotations-list > button {
+		align-self: flex-start;
 	}
 </style>
